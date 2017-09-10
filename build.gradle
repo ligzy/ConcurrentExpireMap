@@ -1,0 +1,15 @@
+group 'net.jzhuge'
+version '0.1.0-SNAPSHOT'
+
+apply plugin: 'java'
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile group: 'net.jodah', name: 'expiringmap', version: '0.5.8'
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+}

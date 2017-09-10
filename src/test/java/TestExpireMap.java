@@ -34,10 +34,11 @@ public class TestExpireMap {
     });
   }
   
-  private ExpireMap<String, String> emap;
+  private ExpireMapExtra<String, String> emap;
 
-  public TestExpireMap(ExpireMap<String, String> emap) {
+  public TestExpireMap(ExpireMapExtra<String, String> emap) {
     this.emap = emap;
+    emap.clear();
   }
   
   @Test
@@ -47,6 +48,7 @@ public class TestExpireMap {
     Assert.assertThat("K1 added", V1, CoreMatchers.is(emap.get(K1)));
     emap.remove(K1);
     Assert.assertThat("K1 removed", null, CoreMatchers.is(emap.get(K1)));
+    Assert.assertThat("0 entry",  0, CoreMatchers.is(emap.size()));
   }
 
   @Test
@@ -60,7 +62,8 @@ public class TestExpireMap {
 
     Thread.sleep(TimeUnit.SECONDS.toMillis(2));
     // t+3
-    Assert.assertThat("K1 expired",  null, CoreMatchers.is(emap.get(K1)));
+    Assert.assertThat("K1 expired", null, CoreMatchers.is(emap.get(K1)));
+    Assert.assertThat("0 entry", 0, CoreMatchers.is(emap.size()));
   }
 
   @Test
@@ -78,15 +81,18 @@ public class TestExpireMap {
     Assert.assertThat("K1 still there", V1, CoreMatchers.is(emap.get(K1)));
     Assert.assertThat("K2 expired", null, CoreMatchers.is(emap.get(K2)));
     Assert.assertThat("K3 still there", V3, CoreMatchers.is(emap.get(K3)));
+    Assert.assertThat("2 entries", 2, CoreMatchers.is(emap.size()));
 
     Thread.sleep(TimeUnit.MILLISECONDS.toMillis(1000));
     // t+2.5
     Assert.assertThat("K1 still there", V1, CoreMatchers.is(emap.get(K1)));
     Assert.assertThat("K3 expired", null, CoreMatchers.is(emap.get(K3)));
+    Assert.assertThat("1 entry", 1, CoreMatchers.is(emap.size()));
 
     Thread.sleep(TimeUnit.MILLISECONDS.toMillis(1000));
     // t+3.5
     Assert.assertThat("K1 expired", null, CoreMatchers.is(emap.get(K1)));
+    Assert.assertThat("0 entry", 0, CoreMatchers.is(emap.size()));
   }
 
   @Test

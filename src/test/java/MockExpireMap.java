@@ -6,7 +6,7 @@ import net.jodah.expiringmap.ExpiringMap;
 /**
  * Mock ExpireMap implementation.
  */
-public class MockExpireMap<K, V> implements ExpireMap<K, V> {
+public class MockExpireMap<K, V> implements ExpireMapExtra<K, V> {
   private ExpiringMap<K, V> impl;
 
   MockExpireMap() {
@@ -29,5 +29,15 @@ public class MockExpireMap<K, V> implements ExpireMap<K, V> {
   @Override
   public void remove(K key) {
     impl.remove(key);
+  }
+
+  @Override
+  public void clear() {
+    impl.clear();
+  }
+
+  @Override
+  public int size() {
+    return impl.size();
   }
 }

@@ -8,7 +8,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Simple ExpireMap implementation.
  */
-public class SimpleExpireMap<K, V> implements ExpireMap<K, V> {
+public class SimpleExpireMap<K, V> implements ExpireMapExtra<K, V> {
   static Logger LOG = LoggerFactory.getLogger(SimpleExpireMap.class);
   
   public class Entry<V> {
@@ -68,5 +68,15 @@ public class SimpleExpireMap<K, V> implements ExpireMap<K, V> {
   @Override
   public void remove(K key) {
     map.remove(key);
+  }
+
+  @Override
+  public void clear() {
+    map.clear();
+  }
+
+  @Override
+  public int size() {
+    return map.size();
   }
 }

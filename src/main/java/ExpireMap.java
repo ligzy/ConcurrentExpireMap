@@ -20,14 +20,14 @@ public interface ExpireMap<K,V> {
   
   /**
    * Get the value associated with the key if present; otherwise, return null.
-
+   *
    * @param key The map key
    */
   V get(K key);
 
   /**
    * Remove the entry associated with key, if any.
-
+   *
    * @param key The map key
    */
   void remove(K key);

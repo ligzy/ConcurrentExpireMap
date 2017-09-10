@@ -1,13 +1,21 @@
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import org.hamcrest.CoreMatchers;
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
 
 
 /**
  * Test ExpireMap implementations.
  */
+@RunWith(Parameterized.class)
 public class TestExpireMap {
   static final String K1 = "key1";
   static final String V1 = "value1";
@@ -15,11 +23,21 @@ public class TestExpireMap {
   static final String V2 = "value2";
   static final String K3 = "key3";
   static final String V3 = "value3";
+
+  @Parameters
+  public static Collection<Object[]> data() {
+    return Arrays.asList(new Object[][] {
+        { new SimpleExpireMap<String, String>(
+            new ConcurrentHashMap<>(),
+            Executors.newScheduledThreadPool(1)) },
+        { new MockExpireMap<String, String>() },
+    });
+  }
   
   private ExpireMap<String, String> emap;
 
-  public TestExpireMap() {
-    this.emap = new MockExpireMap<>();
+  public TestExpireMap(ExpireMap<String, String> emap) {
+    this.emap = emap;
   }
   
   @Test

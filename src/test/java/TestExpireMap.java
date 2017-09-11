@@ -1,6 +1,7 @@
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 
 import org.hamcrest.CoreMatchers;
@@ -132,5 +133,86 @@ public class TestExpireMap {
     Thread.sleep(TimeUnit.SECONDS.toMillis(2));
     // t+3: K1 should be still there
     Assert.assertThat("K1 still there", V1, CoreMatchers.is(emap.get(K1)));
+  }
+  
+  @Test
+  public void testConcurrency() throws InterruptedException {
+    int numThreads = 100;
+    long duration = TimeUnit.SECONDS.toMillis(3);
+    
+    for (int i = 0; i < numThreads; ++i) {
+      new Thread(() -> {
+        switch (rand(1, 4)) {
+        case 1:
+          for (;;) {
+            emap.put(K1, V1, TimeUnit.MILLISECONDS.toMillis(3));
+            try {
+              Thread.sleep(rand(0, 5));
+            } catch (InterruptedException e) {
+              Thread.currentThread().interrupt();
+            }
+            emap.get(K2);
+            try {
+              Thread.sleep(rand(0, 1));
+            } catch (InterruptedException e) {
+              Thread.currentThread().interrupt();
+            }
+            emap.remove(K3);
+            try {
+              Thread.sleep(rand(0, 3));
+            } catch (InterruptedException e) {
+              Thread.currentThread().interrupt();
+            }
+          }
+        case 2:
+          for (;;) {
+            emap.put(K2, V2, TimeUnit.MILLISECONDS.toMillis(2));
+            try {
+              Thread.sleep(rand(0, 2));
+            } catch (InterruptedException e) {
+              Thread.currentThread().interrupt();
+            }
+            emap.get(K3);
+            try {
+              Thread.sleep(rand(0, 2));
+            } catch (InterruptedException e) {
+              Thread.currentThread().interrupt();
+            }
+            emap.remove(K1);
+            try {
+              Thread.sleep(rand(0, 2));
+            } catch (InterruptedException e) {
+              Thread.currentThread().interrupt();
+            }
+          }
+        case 3:
+          for (;;) {
+            emap.put(K3, V3, TimeUnit.MILLISECONDS.toMillis(1));
+            try {
+              Thread.sleep(rand(0, 1));
+            } catch (InterruptedException e) {
+              Thread.currentThread().interrupt();
+            }
+            emap.get(K1);
+            try {
+              Thread.sleep(rand(0, 3));
+            } catch (InterruptedException e) {
+              Thread.currentThread().interrupt();
+            }
+            emap.remove(K2);
+            try {
+              Thread.sleep(rand(0, 5));
+            } catch (InterruptedException e) {
+              Thread.currentThread().interrupt();
+            }
+          }
+        }
+      }).start();
+    }
+    Thread.sleep(duration);
+  }
+  
+  private int rand(int origin, int bound) {
+    return ThreadLocalRandom.current().nextInt(origin, bound);
   }
 }
